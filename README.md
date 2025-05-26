@@ -10,6 +10,7 @@
 - [Deployment](#deployment)
 - [Getting Started](#getting-started)
 - [Problem Solved](#problem-solved)
+- [Postman](#postman)
 
 ## Overview
 
@@ -165,3 +166,13 @@ The authentication microservice has been fully implemented and integrated into t
 - ✅ **Containerized Development**: The authentication service is included in the Docker-based development environment, making it easily deployable and reproducible.
 
 The final result demonstrates effective use of TDD (Test-Driven Development), solid project structure, proper use of third-party libraries, and adherence to the OAuth principles for secured and scoped access.
+
+## Postman
+
+**Postman Collection** [BitSolution API.postman_collection.json](https://github.com/user-attachments/files/20446514/BitSolution.API.postman_collection.json)
+
+
+**Postman Environment** [Phase3-Env.postman_environment.json](https://github.com/user-attachments/files/20446517/Phase3-Env.postman_environment.json)
+
+
+
