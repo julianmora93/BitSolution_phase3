@@ -1,9 +1,8 @@
 /*
- * Copyright (c) 2023 Bit Solution Group
+ * Copyright (c) 2025 Bit Solution Group
  */
 
 import { Prisma, PrismaClient } from '@prisma/client'
-// import { Sql } from '@prisma/client/runtime'
 
 const upsertManyUsers = async (prisma: PrismaClient, users: any[]) => {
   const values = users.map(

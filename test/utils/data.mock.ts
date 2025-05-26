@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Bit Solution Group
+ * Copyright (c) 2025 Bit Solution Group
  */
 
 export const addToQueueMock = jest.fn()

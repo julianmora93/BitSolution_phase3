@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2025 Bit Solution Group
+ */
+
 import { FastifyPluginCallback } from 'fastify'
 
 const prismaMock = (): FastifyPluginCallback => (fastify, _opts, next) => {
