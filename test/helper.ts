@@ -2,67 +2,58 @@
  * Copyright (c) 2023 Bit Solution Group
  */
 
-// TODO: SET HERE THE ENV VARIABLES YOU NEED FOR YOU PROJECT
-
-process.env.DW_SERVER = 'DW_SERVER'
-process.env.DW_USERNAME = 'DW_USERNAME'
-process.env.DW_PORT = '5432'
-process.env.DW_DATABASE = 'DW_DATABASE'
-process.env.DW_PASSWORD = 'DW_PASSWORD'
-process.env.DW_SCHEMA = 'DW_SCHEMA'
-process.env.REDIS_CONFIG = '127.0.0.1:6379'
-process.env.CACHE_TTL = '5000'
-
 import fp from 'fastify-plugin'
 import { FastifyInstance } from 'fastify'
-import { app, AppOptions } from '../src/app'
+import { app, AppOptions, loadRoutes } from '../src/app'
+import axiosMock from './plugins/axios.mock'
+import bullmqMock from './plugins/bullmq.mock'
+import customErrorHandlerMock from './plugins/error-handler.mock'
+import jwtAuthMock from './plugins/jwt-auth.mock'
+import prismaMock from './plugins/prisma.mock'
 
-// Fill in this config with all the configurations
-// needed for testing the application
-function config(): AppOptions {
-  // RETURN HERE ALL THE DEFINED VARIABLES
-  return {
-    REDIS_CONFIG: 'REDIS_CONFIG',
-    CACHE_TTL: 5000,
-    DW_DATABASE: 'DW_DATABASE',
-    DW_PORT: 5432,
-    DW_PASSWORD: 'DW_PASSWORD',
-    TEST_MODE: true,
-    DW_SERVER: 'DW_SERVER',
-    DW_USERNAME: 'DW_USERNAME',
-  }
-}
+const config = (): AppOptions => ({
+  TEST_MODE: true,
+  EXTERNAL_ENDPOINT: 'https://jsonplaceholder.typicode.com',
+  DW_SERVER: 'localhost',
+  DW_DATABASE: 'db_test',
+  DW_USERNAME: 'bitsolution',
+  DW_PASSWORD: 'bitsolution',
+  DW_PORT: 5432,
+  DW_SCHEMA: 'public',
+  DATABASE_URL: 'postgresql://${DW_USERNAME}:${DW_PASSWORD}@${DW_SERVER}:${DW_PORT}/${DW_DATABASE}',
+  MAILHOG_HOST: 'localhost',
+  MAILHOG_SMTP_PORT: 1025,
+  EMAIL_FROM: 'Notification API BitSolution Phase 2 <noreply@bitsoluction_test.com>',
+  BULLMQ_QUEUE_NAME: 'postNotification',
+  BULLMQ_QUEUE_HOST: 'localhost',
+  BULLMQ_QUEUE_PORT: 6379,
+  BULLMQ_REDIS_NAME_SPACE: 'redis-phase-2',
+  WORKER_NAME: 'workerNotification',
+  WORKER_CONCURRENCY_MINUTES: 1,
+  JWT_SECRET: 'bitSolutionTest',
+})
 
-async function build() {
+const build = async () => {
   try {
     const fastify = await app(config())
-    void fastify.register(fp(mocks()))
+    await fastify.register(fp(axiosMock()))
+    await fastify.register(fp(bullmqMock()))
+    await fastify.register(fp(prismaMock()))
+    await fastify.register(fp(jwtAuthMock()))
+    await fastify.register(fp(customErrorHandlerMock()))
+
+    void loadRoutes(fastify, config())
     return fastify
   } catch (e) {
-    console.log(e)
+    console.log('TEST_ERROR => ', e)
     process.exit(1)
   }
 }
 
-
-// TODO: DEFINE HERE ALL THE NEEDED MOCKS
-function mocks() {
-  return (fastify: FastifyInstance, opts: AppOptions, next: any) => {
-    fastify.decorate('prisma', {})
-
-    fastify.decorate('handleAxiosError', (err: any) => {
-      console.log(err)
-      return { code: 422, message: err.message }
-    })
-
-    fastify.decorate('axios', {
-        get: (url: string, config: any) => {
-          return { status: 200, data: {} }
-        },
-    })
-
-    next()
+const closeApp = async (app: FastifyInstance) => {
+  if (app) {
+    await app.close()
   }
 }
 
-export { config, build }
+export { build, closeApp }

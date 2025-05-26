@@ -8,14 +8,17 @@ import { Static, Type } from '@sinclair/typebox'
 const defaultResponseSchema = (
   generalDescription: string,
   messageDescription: string,
-  processCountDescription: string,
+  countDescription: string,
   dataDescription?: string,
 ) =>
   Type.Object(
     {
-      processCount: Type.Number({ description: messageDescription }),
-      message: Type.String({ description: processCountDescription }),
-      data: Type.Optional(Type.Any({ description: dataDescription })),
+      message: Type.String({ description: messageDescription }),
+      data: Type.Any({ description: dataDescription }),
+      count: Type.Number({ description: countDescription }),
+      page: Type.Optional(Type.Integer({ minimum: 1 })),
+      pageSize: Type.Optional(Type.Integer({ minimum: 1 })),
+      totalPages: Type.Optional(Type.Integer()),
     },
     { description: generalDescription },
   )

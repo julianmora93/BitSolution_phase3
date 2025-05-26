@@ -2,24 +2,24 @@
  * Copyright (c) 2023 Bit Solution Group
  */
 
-import fp from 'fastify-plugin';
-import { AppOptions } from '../app';
-import { FastifyPluginAsync } from 'fastify';
-import { Transporter } from 'nodemailer';
-import fastifyMailer from 'fastify-mailer';
+import fp from 'fastify-plugin'
+import { AppOptions } from '../app'
+import { FastifyPluginAsync } from 'fastify'
+import { Transporter } from 'nodemailer'
+import fastifyMailer from 'fastify-mailer'
 
 interface FastifyMailerNamedInstance {
-  [namespace: string]: Transporter;
+  [namespace: string]: Transporter
 }
-type FastifyMailer = FastifyMailerNamedInstance & Transporter;
+type FastifyMailer = FastifyMailerNamedInstance & Transporter
 
 declare module 'fastify' {
   export interface FastifyInstance {
-    mailer: FastifyMailer;
+    mailer: FastifyMailer
   }
 }
 
-const mailerPlugin: FastifyPluginAsync<AppOptions> = fp(async (fastify: any, opts: any) => {
+const mailerPlugin: FastifyPluginAsync<AppOptions> = async (fastify: any, opts: any) => {
   const { TEST_MODE, MAILHOG_HOST, MAILHOG_SMTP_PORT, EMAIL_FROM } = opts
 
   if (TEST_MODE) return
@@ -34,7 +34,8 @@ const mailerPlugin: FastifyPluginAsync<AppOptions> = fp(async (fastify: any, opt
       secure: false,
     },
   })
+}
 
+export default fp(mailerPlugin, {
+  name: 'mailer-plugin',
 })
-
-export default mailerPlugin

@@ -16,10 +16,14 @@ export interface IErrorHandler {
 const DEFAULT_ERR_CODE = 422
 
 const customErrorHandler: FastifyPluginAsync<AppOptions> = async (fastify, opts) => {
+  const { TEST_MODE } = opts
+
+  if (TEST_MODE) return
+
   fastify.decorate(
     'customErrorHandler',
     (err: any, entity = '', defaultMessage = err?.message || 'Unprocessable entity'): IErrorHandler => {
-      console.log(err)
+      // console.log(err)
       let code = err?.statusCode || DEFAULT_ERR_CODE
       let message = defaultMessage
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
@@ -30,8 +34,7 @@ const customErrorHandler: FastifyPluginAsync<AppOptions> = async (fastify, opts)
         } else if (err.code === 'P2025') {
           code = 404
           message = `${entity} not found`
-        }
-		  else if (err.code === 'P2010') {
+        } else if (err.code === 'P2010') {
           code = 422
           message = `Could not resolve the data from data source. Please check your criteria and retry`
         }
@@ -39,11 +42,11 @@ const customErrorHandler: FastifyPluginAsync<AppOptions> = async (fastify, opts)
         code = err.response?.status
         message = err.response?.data
       }
-      try {
-        console.log(code, JSON.stringify(message))
-      } catch (e) {
-        console.log(code, message)
-      }
+      // try {
+      //   console.log(code, JSON.stringify(message))
+      // } catch (e) {
+      //   console.log(code, message)
+      // }
 
       return { code, message }
     }

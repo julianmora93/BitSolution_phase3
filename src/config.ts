@@ -17,6 +17,7 @@ const schema = Type.Object({
   DW_PASSWORD: Type.String(),
   DW_PORT: Type.Number({ default: 5432 }),
   DW_SCHEMA: Type.String({ default: 'public' }),
+  DATABASE_URL: Type.String(),
 
   // MAILHOG CONFIG
   MAILHOG_HOST: Type.String({ default: 'localhost' }),
@@ -31,7 +32,7 @@ const schema = Type.Object({
 
   WORKER_NAME: Type.String({ default: 'workerNotification' }),
   WORKER_CONCURRENCY_MINUTES: Type.Number({ default: 1 }),
-  
+
   JWT_SECRET: Type.String(),
 })
 

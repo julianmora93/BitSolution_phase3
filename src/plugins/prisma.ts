@@ -13,7 +13,7 @@ declare module 'fastify' {
   }
 }
 
-const prismaPlugin: FastifyPluginAsync<AppOptions> = fp(async (fastify: any, options: any) => {
+const prismaPlugin: FastifyPluginAsync<AppOptions> = async (fastify, options) => {
   const { DW_PORT, TEST_MODE, DW_SCHEMA, DW_SERVER, DW_PASSWORD, DW_DATABASE, DW_USERNAME } = options
 
   if (TEST_MODE) return
@@ -40,6 +40,8 @@ const prismaPlugin: FastifyPluginAsync<AppOptions> = fp(async (fastify: any, opt
   fastify.addHook('onClose', async (fastify: any) => {
     await fastify.prisma.$disconnect()
   })
-})
+}
 
-export default prismaPlugin
+export default fp(prismaPlugin, {
+  name: 'prisma-plugin',
+})

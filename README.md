@@ -8,9 +8,9 @@
   - [Plugins](#plugins)
   - [Services](#services)
   - [Database](#database)
-- [Problem Solving](#problem-solving)
 - [Deployment](#deployment)
 - [Getting Started](#getting-started)
+- [Problem Solved](#problem-solved)
 
 ## Overview
 
@@ -75,14 +75,6 @@ The BitSolution Phase 2 project is designed to provide a robust backend solution
 ### Database
 
 - **Prisma**: Used for database schema management and query execution. The schema is defined in `prisma/schema.prisma`.
-
-## Problem Solving
-
-The project addresses several key challenges:
-
-1. **Scalability**: By using BullMQ for task queuing, the system can handle a large number of tasks without blocking the main application flow.
-2. **Modularity**: The use of Fastify plugins allows for easy integration and management of various services.
-3. **Maintainability**: TypeScript and Prisma provide strong typing and schema management, reducing runtime errors and improving code quality.
 
 ## Deployment
 
@@ -158,3 +150,21 @@ docker exec -it db-bitsolution bash
 2. **Build the Project**: Use `npm run build` to compile the TypeScript code.
 3. **Run the Application**: Start the server with `npm start`.
 4. **Run the Application in Dev**: Execute dev mode using `npm run dev`.
+4. **Run the complete Test**: Execute complete test mode using `npm run test`.
+4. **Run the Test Coverga**: Execute test covergae `npm run test:coverage`.
+4. **Run the User Test**: Execute only user test `npm run test:users`.
+4. **Run the Notification Test**: Execute only notification test `npm run test:notification`.
+
+
+## Deployment
+
+The authentication microservice has been fully implemented and integrated into the project. The key features delivered include:
+
+- ✅ **JWT Token Signing**: Implemented using Core Plugin `@fastify/jwt`. The token includes scope data and is used for authorizing access to endpoints.
+- ✅ **Scope-Based Authorization**: A Fastify decorator (`fastify.authenticate`) validates JWTs and checks for required scopes per endpoint (`read` or `write`).
+- ✅ **Pagination and Filtering**: The `GET /users` endpoint now accepts pagination (`page`, `limit`) and filtering parameters (`name`, `username`, `email`, `phone`, `website`).
+- ✅ **Comprehensive Unit Tests**: All endpoints and core functionalities are covered with unit tests using Jest, achieving **over 85% test coverage**.
+- ✅ **Mock Plugins for Testing**: Custom Fastify plugin mocks are used to simulate external services like Redis, Prisma, and Axios during tests.
+- ✅ **Containerized Development**: The authentication service is included in the Docker-based development environment, making it easily deployable and reproducible.
+
+The final result demonstrates effective use of TDD (Test-Driven Development), solid project structure, proper use of third-party libraries, and adherence to the OAuth principles for secured and scoped access.

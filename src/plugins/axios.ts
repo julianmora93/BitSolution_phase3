@@ -14,7 +14,7 @@ declare module 'fastify' {
   }
 }
 
-const axiosPlugin: FastifyPluginAsync<AppOptions> = fp(async (fastify: any, opts: any) => {
+const axiosPlugin: FastifyPluginAsync<AppOptions> = async (fastify, opts) => {
   const { TEST_MODE } = opts
 
   if (TEST_MODE) return
@@ -34,6 +34,8 @@ const axiosPlugin: FastifyPluginAsync<AppOptions> = fp(async (fastify: any, opts
 
   fastify.decorate('axios', axios)
   fastify.decorate('handleAxiosError', axiosErrorChecker)
-})
+}
 
-export default axiosPlugin
+export default fp(axiosPlugin, {
+  name: 'axios-plugin',
+})

@@ -23,8 +23,11 @@ declare module '@fastify/jwt' {
 }
 
 const jwtPlugin: FastifyPluginAsync<AppOptions> = async (fastify, opts) => {
+  const { TEST_MODE, JWT_SECRET } = opts
+
+  if (TEST_MODE) return
+
   const ENTITY_NAME = 'jwt'
-  const { JWT_SECRET } = opts
 
   fastify.register(fastifyJwt, {
     secret: JWT_SECRET,

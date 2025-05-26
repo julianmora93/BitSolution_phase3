@@ -1,3 +1,7 @@
-coverage
-kubernetes
 node_modules
+kubernetes
+dist
+coverage
+.env
+test
+*.log

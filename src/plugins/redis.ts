@@ -8,10 +8,10 @@ import { AppOptions } from '../app'
 import KeyvRedis from '@keyv/redis'
 import { FastifyPluginAsync } from 'fastify'
 
-export interface ICacheRes {
-  store?: KeyvRedis<null>
-  namespace?: string
-}
+// export interface ICacheRes {
+//   store?: KeyvRedis<null>
+//   namespace?: string
+// }
 
 export type Cache = Keyv<string | undefined>
 
@@ -21,7 +21,7 @@ declare module 'fastify' {
   }
 }
 
-const redisPlugin: FastifyPluginAsync<AppOptions> = fp(async (fastify: any, options: any) => {
+const redisPlugin: FastifyPluginAsync<AppOptions> = async (fastify: any, options: any) => {
   const { TEST_MODE, BULLMQ_QUEUE_HOST, BULLMQ_QUEUE_PORT, BULLMQ_REDIS_NAME_SPACE } = options
 
   if (TEST_MODE) return
@@ -50,7 +50,7 @@ const redisPlugin: FastifyPluginAsync<AppOptions> = fp(async (fastify: any, opti
       await store.disconnect()
     }
   })
-})
+}
 
 export default fp(redisPlugin, {
   name: 'redis-plugin',

@@ -28,7 +28,7 @@ export type UserEntity = {
 
 export type PostNotification = {
   userId: number
-  postId: number
+  id: number
   title: string
   body: string
 }

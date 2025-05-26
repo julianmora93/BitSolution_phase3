@@ -39,18 +39,26 @@ const userQueryStringSchema = Type.Object(
     email: Type.Optional(Type.String({ minLength: 1, description: 'Filter by email' })),
     phone: Type.Optional(Type.String({ minLength: 1, description: 'Filter by phone' })),
     website: Type.Optional(Type.String({ minLength: 1, description: 'Filter by website' })),
+    page: Type.Optional(Type.String({ minLength: 1, description: 'Page' })),
+    pageSize: Type.Optional(Type.String({ minLength: 1, description: 'Page size' })),
   },
   { description: 'User search parameters' },
 )
 
+const userBodyTokenSchema = Type.Object(
+  {
+    userId: Type.Number({ description: 'User ID' }),
+    userName: Type.String({ minLength: 1, description: 'User Name' }),
+    scope: Type.String({ minLength: 1, description: 'Scope of access, example: \"read write\"' }),
+  },
+  { description: 'User information required for token generation' },
+)
+
 // TYPES
 type UserLoadSchema = Static<typeof userLoadSchema>
+type UserBodyTokenSchema = Static<typeof userBodyTokenSchema>
+type UserQueryStringSchema = Static<typeof userQueryStringSchema>
 
-export {
-  userLoadSchema,
-  userQueryStringSchema,
-}
+export { userLoadSchema, userQueryStringSchema, userBodyTokenSchema }
 
-export type {
-  UserLoadSchema,
-}
+export type { UserLoadSchema, UserBodyTokenSchema, UserQueryStringSchema }

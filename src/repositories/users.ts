@@ -3,7 +3,7 @@
  */
 
 import { Prisma, PrismaClient } from '@prisma/client'
-import { Sql } from '@prisma/client/runtime'
+// import { Sql } from '@prisma/client/runtime'
 
 const upsertManyUsers = async (prisma: PrismaClient, users: any[]) => {
   const values = users.map(
@@ -46,29 +46,37 @@ const findUsers = async (
     email?: string
     phone?: string
     website?: string
+    page?: number
+    pageSize?: number
   },
 ) => {
-  let whereClauses: Sql[] = []
-  if (filters.name) whereClauses.push(Prisma.sql`name ILIKE ${'%' + filters.name + '%'}`)
-  if (filters.username) whereClauses.push(Prisma.sql`username ILIKE ${'%' + filters.username + '%'}`)
-  if (filters.email) whereClauses.push(Prisma.sql`email ILIKE ${'%' + filters.email + '%'}`)
-  if (filters.phone) whereClauses.push(Prisma.sql`phone ILIKE ${'%' + filters.phone + '%'}`)
-  if (filters.website) whereClauses.push(Prisma.sql`website ILIKE ${'%' + filters.website + '%'}`)
+  const { page = 1, pageSize = 10 } = filters
+  const offset = (page - 1) * pageSize
 
-  const where = whereClauses.length > 0 ? Prisma.sql`WHERE ${Prisma.join(whereClauses, ' AND ')}` : Prisma.empty
+  const dynamicWhere: any = {}
+  if (filters.name) dynamicWhere.name = { contains: filters.name, mode: 'insensitive' }
+  if (filters.username) dynamicWhere.username = { contains: filters.username, mode: 'insensitive' }
+  if (filters.email) dynamicWhere.email = { contains: filters.email, mode: 'insensitive' }
+  if (filters.phone) dynamicWhere.phone = { contains: filters.phone, mode: 'insensitive' }
+  if (filters.website) dynamicWhere.website = { contains: filters.website, mode: 'insensitive' }
 
-  return prisma.$queryRaw<any>(
-    Prisma.sql`SELECT 
-        id, 
-        name, 
-        username, 
-        email, 
-        phone, 
-        website, 
-        address, 
-        company 
-      FROM users ${where}`,
-  )
+  const users = await prisma.user.findMany({
+    where: dynamicWhere,
+    skip: offset,
+    take: pageSize,
+  })
+
+  const count = await prisma.user.count({
+    where: dynamicWhere,
+  })
+
+  return {
+    users,
+    count,
+    page,
+    pageSize,
+    totalPages: Math.ceil(count / pageSize),
+  }
 }
 
 const getUserById = async (prisma: PrismaClient, id: number) => {

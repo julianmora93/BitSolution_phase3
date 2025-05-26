@@ -10,8 +10,11 @@
     "build": "tsc",
     "dev": "tsx watch src/main.ts",
     "worker": "tsx src/workers/notification-worker.ts",
-    "test": "tsc -p test/tsconfig.json && jest",
-    "start": "tsx dist/src/main.js"
+    "start": "tsx dist/src/main.js",
+    "test": "tsc -p test/tsconfig.json && jest --no-coverage --verbose",
+    "test:coverage": "tsc -p test/tsconfig.json && jest --coverage --verbose",
+    "test:users": "node \"node_modules/jest/bin/jest.js\" \"test/routes/user.test.ts\" -c \"jest.config.js\"",
+    "test:notification": "node \"node_modules/jest/bin/jest.js\" \"test/routes/notification.test.ts\" -c \"jest.config.js\""
   },
   "keywords": [],
   "author": "",

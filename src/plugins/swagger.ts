@@ -9,7 +9,11 @@ import { FastifyPluginAsync } from 'fastify'
 import fastifySwaggerUi from '@fastify/swagger-ui'
 import { name, description, version } from '../../package.json'
 
-const swaggerPlugin: FastifyPluginAsync<AppOptions> = fp(async (fastify: any, opts: any) => {
+const swaggerPlugin: FastifyPluginAsync<AppOptions> = async (fastify, opts) => {
+  const { TEST_MODE } = opts
+
+  if (TEST_MODE) return
+
   fastify.register(swagger, {
     swagger: {
       info: { title: name, description, version },
@@ -28,6 +32,8 @@ const swaggerPlugin: FastifyPluginAsync<AppOptions> = fp(async (fastify: any, op
     },
     staticCSP: true,
   })
-})
+}
 
-export default swaggerPlugin
+export default fp(swaggerPlugin, {
+  name: 'swagger-plugin',
+})
