@@ -63,11 +63,11 @@ Each job contains information about a post and the target user. When a job is re
 
 - **[Mailer Plugin](src/plugins/mailer.ts)**: This plugin integrates FastifyMailer with the application to enable email delivery using a configured SMTP transport, such as [MailHog](https://github.com/mailhog/MailHog?tab=readme-ov-file) for local development.
 
-- **[Redis Plugin](src/plugins/01.redis.ts)**: Manages caching and session storage using Redis. Utiliza `Keyv` y `KeyvRedis` para manejar la conexión y almacenamiento en Redis.
+- **[Redis Plugin](src/plugins/redis.ts)**: Manages caching and session storage using Redis. Utiliza `Keyv` y `KeyvRedis` para manejar la conexión y almacenamiento en Redis.
 
-- **[Prisma Plugin](src/plugins/03.prisma.ts)**: Maneja las conexiones y operaciones de base de datos utilizando Prisma ORM. Configura el cliente de Prisma para conectarse a la base de datos PostgreSQL.
+- **[Prisma Plugin](src/plugins/prisma.ts)**: Maneja las conexiones y operaciones de base de datos utilizando Prisma ORM. Configura el cliente de Prisma para conectarse a la base de datos PostgreSQL.
 
-- **[Swagger Plugin](src/plugins/06.swagger.ts)**: Integra Swagger para la documentación de la API, permitiendo la visualización y prueba de los endpoints a través de una interfaz gráfica.
+- **[Swagger Plugin](src/plugins/swagger.ts)**: Integra Swagger para la documentación de la API, permitiendo la visualización y prueba de los endpoints a través de una interfaz gráfica.
 
 ### Database
 
