@@ -8,11 +8,6 @@ import { AppOptions } from '../app'
 import KeyvRedis from '@keyv/redis'
 import { FastifyPluginAsync } from 'fastify'
 
-// export interface ICacheRes {
-//   store?: KeyvRedis<null>
-//   namespace?: string
-// }
-
 export type Cache = Keyv<string | undefined>
 
 declare module 'fastify' {
