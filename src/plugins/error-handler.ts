@@ -23,7 +23,7 @@ const customErrorHandler: FastifyPluginAsync<AppOptions> = async (fastify, opts)
   fastify.decorate(
     'customErrorHandler',
     (err: any, entity = '', defaultMessage = err?.message || 'Unprocessable entity'): IErrorHandler => {
-      // console.log(err)
+      console.log(err)
       let code = err?.statusCode || DEFAULT_ERR_CODE
       let message = defaultMessage
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
@@ -42,11 +42,11 @@ const customErrorHandler: FastifyPluginAsync<AppOptions> = async (fastify, opts)
         code = err.response?.status
         message = err.response?.data
       }
-      // try {
-      //   console.log(code, JSON.stringify(message))
-      // } catch (e) {
-      //   console.log(code, message)
-      // }
+      try {
+        console.log(code, JSON.stringify(message))
+      } catch (e) {
+        console.log(code, message)
+      }
 
       return { code, message }
     }
