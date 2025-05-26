@@ -45,7 +45,6 @@ const build = async () => {
     void loadRoutes(fastify, config())
     return fastify
   } catch (e) {
-    console.log('TEST_ERROR => ', e)
     process.exit(1)
   }
 }

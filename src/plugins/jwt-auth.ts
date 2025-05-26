@@ -38,17 +38,13 @@ const jwtPlugin: FastifyPluginAsync<AppOptions> = async (fastify, opts) => {
     return async function (request: FastifyRequest, reply: FastifyReply) {
       try {
         await request.jwtVerify()
-        const hasAllScopes = requiredScopes.every(scope =>
-          request.user.scope?.includes(scope)
-        )
-  
+        const hasAllScopes = requiredScopes.every((scope) => request.user.scope?.includes(scope))
+
         if (!hasAllScopes) {
           fastify.customErrorHandler('Insufficient permissions to complete the request.', ENTITY_NAME, '')
           return reply.code(403).send('Insufficient permissions to complete the request.')
         }
       } catch (err) {
-        console.log('JMORA[jwtPlugin] => err: ', err)
-        console.log('--')
         const { code, message } = fastify.customErrorHandler(err, ENTITY_NAME, '')
         reply.code(code).send(message)
       }
