@@ -6,7 +6,6 @@
 - [Endpoints](#endpoints)
 - [Key Components](#key-components)
   - [Plugins](#plugins)
-  - [Services](#services)
   - [Database](#database)
 - [Deployment](#deployment)
 - [Getting Started](#getting-started)
@@ -51,26 +50,24 @@ The BitSolution Phase 2 project is designed to provide a robust backend solution
 
 ### Plugins
 
-- **[Redis Plugin](src/plugins/01.redis.ts)**: Manages caching and session storage using Redis. Utiliza `Keyv` y `KeyvRedis` para manejar la conexión y almacenamiento en Redis.
+- **[Axios Plugin](src/plugins/axios.ts)**: Proporciona una instancia de Axios para realizar solicitudes HTTP y maneja errores específicos de Axios.
 
-- **[BullMQ Plugin](src/plugins/02.bullmq.ts)**: Configura y gestiona las colas de tareas utilizando BullMQ. Permite la ejecución de trabajos en segundo plano con opciones de reintento y eliminación automática de trabajos completados o fallidos.
+- **[BullMQ Plugin](src/plugins/bullmq.ts)**: Configura y gestiona las colas de tareas utilizando BullMQ. Permite la ejecución de trabajos en segundo plano con opciones de reintento y eliminación automática de trabajos completados o fallidos.
+
+- **[BullMQ Plugin](src/plugins/bull-worker.ts)**: This plugin registers a BullMQ Worker that listens for incoming notification jobs from the configured Redis queue.
+Each job contains information about a post and the target user. When a job is received, the worker retrieves the user's email address from the database and sends them an email notification about the new post using the configured mailer.
+
+- **[Error Handler Plugin](src/plugins/error-handler.ts)**: Implementa un manejador de errores personalizado que gestiona errores comunes de Prisma y Axios, proporcionando mensajes de error claros y códigos de estado HTTP.
+
+- **[jwtAuth Plugin](src/plugins/jwt-auth.ts)**: This plugin integrates [Fastify JWT](https://github.com/fastify/fastify-jwt) into the application to provide secure authentication and scope-based authorization for protected routes.
+
+- **[Mailer Plugin](src/plugins/mailer.ts)**: This plugin integrates FastifyMailer with the application to enable email delivery using a configured SMTP transport, such as [MailHog](https://github.com/mailhog/MailHog?tab=readme-ov-file) for local development.
+
+- **[Redis Plugin](src/plugins/01.redis.ts)**: Manages caching and session storage using Redis. Utiliza `Keyv` y `KeyvRedis` para manejar la conexión y almacenamiento en Redis.
 
 - **[Prisma Plugin](src/plugins/03.prisma.ts)**: Maneja las conexiones y operaciones de base de datos utilizando Prisma ORM. Configura el cliente de Prisma para conectarse a la base de datos PostgreSQL.
 
-- **[Axios Plugin](src/plugins/04.axios.ts)**: Proporciona una instancia de Axios para realizar solicitudes HTTP y maneja errores específicos de Axios.
-
-- **[Error Handler Plugin](src/plugins/05.error-handler.ts)**: Implementa un manejador de errores personalizado que gestiona errores comunes de Prisma y Axios, proporcionando mensajes de error claros y códigos de estado HTTP.
-
 - **[Swagger Plugin](src/plugins/06.swagger.ts)**: Integra Swagger para la documentación de la API, permitiendo la visualización y prueba de los endpoints a través de una interfaz gráfica.
-
-- **[Mailer Plugin](src/plugins/07.mailer.ts)**: Configura un servicio de correo utilizando `fastify-mailer` para enviar notificaciones por email. Utiliza MailHog como servidor SMTP en el entorno de desarrollo.
-
-- **[Cron Plugin](src/plugins/08.cron.ts)**: Programa y ejecuta tareas periódicas utilizando `fastify-cron`. Configura trabajos cron para ejecutar tareas a intervalos regulares, como el procesamiento de notificaciones.
-
-### Services
-
-- **[Enqueue Service](src/services/enqueue.ts)**: Manages task queues using BullMQ, allowing tasks to be processed asynchronously.
-- **[Worker Service](src/services/worker.ts)**: Processes queued tasks, such as sending email notifications.
 
 ### Database
 
