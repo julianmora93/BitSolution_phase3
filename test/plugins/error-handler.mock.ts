@@ -2,15 +2,22 @@
  * Copyright (c) 2025 Bit Solution Group
  */
 
-import { FastifyPluginCallback } from 'fastify'
+import { FastifyPluginCallback, FastifyReply } from 'fastify'
 
 const customErrorHandlerMock = (): FastifyPluginCallback => (fastify, _opts, next) => {
-  const errorHandler = (err: any, entity: string, defaultMessage: string) => ({
-    code: err.statusCode,
-    message: `TestError => Entity: ${entity} - message: ${defaultMessage}`,
-  })
+  const errorHandler = (err: any, entity = '', reply: FastifyReply): void => {
+    const code = err?.statusCode || 422
+    const message = `TestError => Entity: ${entity} - message: ${err?.message || 'default message'}`
 
-  fastify.decorate('customErrorHandler', errorHandler as any)
+    // Simula comportamiento real
+    reply.code(code).send({
+      message,
+      data: code,
+      count: 0,
+    })
+  }
+
+  fastify.decorate('customErrorHandler', errorHandler)
   next()
 }
 

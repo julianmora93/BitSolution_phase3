@@ -69,4 +69,14 @@ describe('Notification Routes', () => {
     expect(response.statusCode).toBe(403)
   })
 
+  it('POST /posts/published-notification => should handle errors from axios', async () => {
+    app.axios.get = jest.fn().mockRejectedValue(new Error('Axios error'))
+    const response = await app.inject({
+      method: 'POST',
+      url: '/posts/published-notification',
+      headers: { authorization: `${tokenMock}write read` },
+    })
+    expect(response.statusCode).toBe(422)
+  })
+
 })

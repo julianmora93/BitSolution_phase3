@@ -10,6 +10,6 @@ const start = async () => {
 }
 
 start().catch((err) => {
-  console.log(err)
+  console.log('main => ', err)
   process.exit(1)
 })

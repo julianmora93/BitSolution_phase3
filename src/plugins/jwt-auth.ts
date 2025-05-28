@@ -41,12 +41,14 @@ const jwtPlugin: FastifyPluginAsync<AppOptions> = async (fastify, opts) => {
         const hasAllScopes = requiredScopes.every((scope) => request.user.scope?.includes(scope))
 
         if (!hasAllScopes) {
-          fastify.customErrorHandler('Insufficient permissions to complete the request.', ENTITY_NAME, '')
-          return reply.code(403).send('Insufficient permissions to complete the request.')
+          fastify.customErrorHandler(
+            { statusCode: 403, message: 'Insufficient permissions to complete the request.' },
+            ENTITY_NAME,
+            reply,
+          )
         }
-      } catch (err) {
-        const { code, message } = fastify.customErrorHandler(err, ENTITY_NAME, '')
-        reply.code(code).send(message)
+      } catch (err: any) {
+        fastify.customErrorHandler(err, ENTITY_NAME, reply)
       }
     }
   })

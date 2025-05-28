@@ -19,8 +19,12 @@ const user: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void
     preValidation: fastify.authenticate(['write']),
     handler: async (_req, reply) => {
       const { data: users } = await fastify.axios.get<UserLoadSchema[]>(`${EXTERNAL_ENDPOINT}/users`)
-      if (!users || users.length === 0) {
-        throw fastify.customErrorHandler({ statusCode: 400 }, ENTITY_NAME, 'No users found in the external API.')
+      if (users?.length === 0) {
+        fastify.customErrorHandler(
+          { statusCode: 400, message: 'No users found in the external API.' },
+          ENTITY_NAME,
+          reply,
+        )
       }
       await upsertManyUsers(
         fastify.prisma,
@@ -37,13 +41,7 @@ const user: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void
       )
       reply.send({ count: users.length, message: 'Users loaded successfully.', data: users })
     },
-    errorHandler: (error, _request, reply) => {
-      reply.code(Number(error.code)).send({
-        message: error.message,
-        data: error.code,
-        count: 0,
-      })
-    },
+    errorHandler: (error, _request, reply) => fastify.customErrorHandler(error, ENTITY_NAME, reply),
     schema: {
       tags: [ENTITY_NAME],
       summary: 'Loads users from an external API and saves them to the database.',
@@ -60,7 +58,7 @@ const user: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void
     handler: async (req, reply) => {
       const queryParams = req.query as UserQueryStringSchema
       if (queryParams.page === '0' || queryParams.pageSize === '0') {
-        throw fastify.customErrorHandler({ statusCode: 400 }, ENTITY_NAME, 'Body resquest error')
+        fastify.customErrorHandler({ statusCode: 400, message: 'Body resquest error' }, ENTITY_NAME, reply)
       }
       const pageParam = Number(queryParams.page) || 1
       const pageSizeParam = Number(queryParams.pageSize) || 10
@@ -78,13 +76,7 @@ const user: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void
         totalPages,
       })
     },
-    errorHandler: (error, _request, reply) => {
-      reply.code(Number(error.code)).send({
-        message: error.message,
-        data: error.code,
-        count: 0,
-      })
-    },
+    errorHandler: (error, _request, reply) => fastify.customErrorHandler(error, ENTITY_NAME, reply),
     schema: {
       tags: [ENTITY_NAME],
       summary: 'Retrieves the list of users stored in the database.',
@@ -101,7 +93,7 @@ const user: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void
     handler: async (request, reply) => {
       const { userId, userName, scope } = request.body as UserBodyTokenSchema
       if (userId == 0 || userName === '' || scope === '') {
-        throw fastify.customErrorHandler({ statusCode: 400 }, ENTITY_NAME, 'Body resquest error')
+        fastify.customErrorHandler({ statusCode: 400, message: 'Body resquest error' }, ENTITY_NAME, reply)
       }
       const token = fastify.jwt.sign({
         sub: userId,
@@ -110,11 +102,7 @@ const user: FastifyPluginAsync<AppOptions> = async (fastify, opts): Promise<void
       reply.send({ count: 1, message: `Token generated successfully. User ${userName}`, data: token })
     },
     errorHandler: (error, _request, reply) => {
-      reply.code(Number(error.code)).send({
-        message: error.message,
-        data: error.code,
-        count: 0,
-      })
+      fastify.customErrorHandler(error, ENTITY_NAME, reply)
     },
     schema: {
       tags: [ENTITY_NAME],

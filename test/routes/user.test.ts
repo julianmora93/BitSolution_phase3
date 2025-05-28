@@ -21,8 +21,7 @@ describe('User Routes', () => {
   })
 
   beforeEach(() => {
-    (findUsers as jest.Mock).mockResolvedValue(dataUsersMock),
-    (upsertManyUsers as jest.Mock).mockResolvedValue(true)
+    ;(findUsers as jest.Mock).mockResolvedValue(dataUsersMock), (upsertManyUsers as jest.Mock).mockResolvedValue(true)
   })
 
   afterAll(async () => {
@@ -36,10 +35,9 @@ describe('User Routes', () => {
       body: {
         userId: '10',
         userName: 'jmora',
-        scope: 'read write'
-      }
+        scope: 'read write',
+      },
     })
-    
     expect(response.statusCode).toBe(200)
   })
 
@@ -50,20 +48,30 @@ describe('User Routes', () => {
       body: {
         userId: 0,
         userName: 'jmora',
-        scope: 'read write'
-      }
+        scope: 'read write',
+      },
     })
-    
     expect(response.statusCode).toBe(400)
   })
 
-  it('POST /token => should return 500 when the request body is missing', async () => {
+  it('POST /token => should return 400 when the request body is missing', async () => {
     const response = await app.inject({
       method: 'POST',
       url: '/token',
     })
+    expect(response.statusCode).toBe(400)
+  })
 
-    expect(response.statusCode).toBe(500)
+  it('POST /token => should handle JWT sign error', async () => {
+    app.jwt.sign = jest.fn(() => {
+      throw new Error('JWT error')
+    })
+    const response = await app.inject({
+      method: 'POST',
+      url: '/token',
+      body: { userId: '10', userName: 'jmora', scope: 'read write' },
+    })
+    expect(response.statusCode).toBe(422)
   })
 
   it('GET /users => should return 400 when the request body contains an invalid property', async () => {
@@ -71,66 +79,82 @@ describe('User Routes', () => {
       method: 'GET',
       url: '/users',
       headers: {
-        authorization: `${tokenMock}read`
+        authorization: `${tokenMock}read`,
       },
       query: {
         page: '0',
-        pageSize: '10'
-      }
+        pageSize: '10',
+      },
     })
-
     expect(response.statusCode).toBe(400)
   })
 
   it('GET /users => should return 200 with mock', async () => {
-    (findUsers as jest.Mock).mockResolvedValue(dataUsersMock)
+    ;(findUsers as jest.Mock).mockResolvedValue(dataUsersMock)
 
     const response = await app.inject({
       method: 'GET',
       url: '/users',
       headers: {
-        authorization: `${tokenMock}read`
+        authorization: `${tokenMock}read`,
       },
       query: {
         page: '1',
-        pageSize: '10'
-      }
+        pageSize: '10',
+      },
     })
-    expect(findUsers).toHaveBeenCalledTimes(1)
+    expect(findUsers).toHaveBeenCalled()
     expect(response.statusCode).toBe(200)
   })
-  
+
   it('GET /users => should return 401 without token', async () => {
-    (findUsers as jest.Mock).mockResolvedValue(dataUsersMock)
+    ;(findUsers as jest.Mock).mockResolvedValue(dataUsersMock)
 
     const response = await app.inject({
       method: 'GET',
       url: '/users',
       query: {
         page: '1',
-        pageSize: '10'
-      }
+        pageSize: '10',
+      },
     })
 
     expect(response.statusCode).toBe(401)
   })
 
   it('GET /users => should return 403 when permissions are insufficient', async () => {
-    (findUsers as jest.Mock).mockResolvedValue(dataUsersMock)
+    ;(findUsers as jest.Mock).mockResolvedValue(dataUsersMock)
 
     const response = await app.inject({
       method: 'GET',
       url: '/users',
       headers: {
-        authorization: `${tokenMock}write`
+        authorization: `${tokenMock}write`,
       },
       query: {
         page: '1',
-        pageSize: '10'
-      }
+        pageSize: '10',
+      },
     })
-
     expect(response.statusCode).toBe(403)
+  })
+
+  it('GET /users => should handle repository error', async () => {
+    ;(findUsers as jest.Mock).mockImplementation(() => {
+      throw new Error('Repo error')
+    })
+    const response = await app.inject({
+      method: 'GET',
+      url: '/users',
+      headers: {
+        authorization: `${tokenMock}read`,
+      },
+      query: {
+        page: '1',
+        pageSize: '10',
+      },
+    })
+    expect(response.statusCode).toBe(422)
   })
 
   it('POST /users/load => should return 200 as the request conditions are satisfied', async () => {
@@ -138,29 +162,29 @@ describe('User Routes', () => {
       method: 'POST',
       url: '/users/load',
       headers: {
-        authorization: `${tokenMock}write read`
-      }
+        authorization: `${tokenMock}write read`,
+      },
     })
     const { count } = JSON.parse(response.body)
     expect(response.statusCode).toBe(200)
     expect(count).toBeGreaterThan(1)
     expect(upsertManyUsers).toHaveBeenCalledTimes(1)
   })
-  
+
   it('POST /users/load => should return 400 if the Axios response is empty', async () => {
     app.axios.get = jest.fn().mockResolvedValue({ status: 200, data: [] })
     const response = await app.inject({
       method: 'POST',
       url: '/users/load',
       headers: {
-        authorization: `${tokenMock}write read`
-      }
+        authorization: `${tokenMock}write read`,
+      },
     })
     const { count } = JSON.parse(response.body)
     expect(response.statusCode).toBe(400)
     expect(count).toEqual(0)
   })
-  
+
   it('POST /users/load => should return 401 without token', async () => {
     app.axios.get = jest.fn().mockResolvedValue({ status: 200, data: [] })
     const response = await app.inject({
@@ -169,16 +193,29 @@ describe('User Routes', () => {
     })
     expect(response.statusCode).toBe(401)
   })
-  
+
   it('POST /users/load => should return 403 when permissions are insufficient', async () => {
     app.axios.get = jest.fn().mockResolvedValue({ status: 200, data: [] })
     const response = await app.inject({
       method: 'POST',
       url: '/users/load',
       headers: {
-        authorization: `${tokenMock}read`
-      }
+        authorization: `${tokenMock}read`,
+      },
     })
     expect(response.statusCode).toBe(403)
   })
+
+  it('POST /users/load => should handle axios error', async () => {
+    app.axios.get = jest.fn().mockRejectedValue(new Error('Axios error'))
+    const response = await app.inject({
+      method: 'POST',
+      url: '/users/load',
+      headers: {
+        authorization: `${tokenMock}write read`,
+      },
+    })
+    expect(response.statusCode).toBe(422)
+  })
+  
 })

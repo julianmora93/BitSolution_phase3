@@ -20,7 +20,11 @@ const axiosPlugin: FastifyPluginAsync<AppOptions> = async (fastify, opts) => {
   if (TEST_MODE) return
 
   const axiosErrorChecker = (err: any) => {
-    console.log(err)
+    console.log('axiosErrorChecker => ', {
+      code: 422,
+      message: err.message,
+      error: err,
+    })
     let code = 422
     let message = err.message
 
